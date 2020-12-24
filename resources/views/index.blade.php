@@ -7,43 +7,63 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
         integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
         crossorigin="anonymous"></script>
-<div class="container">
-    <div class="card">
-        <div class="card-header bg-success">
-            Add customer
-        </div>
-        <div class="card-body">
-            <form action="">
-                <p>First Name: <input type="text" name="first_name" id="first_name" class="form-control"/> <span
-                        id="first_name"></span></p>
-                <p>Last Name: <input type="text" name="last_name" id="last_name" class="form-control"/> <span
-                        id="last_name"></span></p>
-                <button id="addCustomer">ADD</button>
-            </form>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+    Add Customer
+</button>
 
+<!-- Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                    <p>First Name: <input type="text" name="first_name" id="first_name" class="form-control"/> <span
+                            id="first_name"></span></p>
+                    <p>Last Name: <input type="text" name="last_name" id="last_name" class="form-control"/> <span
+                            id="last_name"></span></p>
+                    <button id="addCustomer">ADD</button>
+                </div>
+            </div>
+{{--            <div class="modal-footer">--}}
+{{--                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="addCustomer">ADD</button>--}}
+{{--                <button type="button" class="btn btn-primary">Save changes</button>--}}
+{{--            </div>--}}
         </div>
     </div>
 </div>
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-success">
-            Edit customer
-        </div>
-        <div class="card-body">
-            <input type="hidden" id="customer_id">
-            <p>First Name: <input type="text" name="first_name" id="edit_first_name" class="form-control"/> <span
-                    id="first_name"></span></p>
-            <p>Last Name: <input type="text" name="last_name" id="edit_last_name" class="form-control"/> <span
-                    id="last_name"></span></p>
-            <button id="update" onclick="updateCustomer()">update</button>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit customer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                            <input type="hidden" id="customer_id">
+                <p>First Name: <input type="text" name="first_name" id="edit_first_name" class="form-control"/> <span
+                        id="first_name"></span></p>
+                <p>Last Name: <input type="text" name="last_name" id="edit_last_name" class="form-control"/> <span
+                        id="last_name"></span></p>
+                <button id="update" onclick="updateCustomer()">update</button>
+            </div>
+                    </div>--}}
         </div>
     </div>
 </div>
+
 
 <div class="container mt-3">
     <div class="card">
         <div class="card-header bg-success">
-            <button id="list">danh sach</button>
+            <button id="list" onclick="getAll()">danh sach</button>
             <input type="search" id="searchByName" onkeyup="searchByFirstName()">
             <button id="search" class="btn btn-primary" onclick="searchByFirstName()">search</button>
         </div>
@@ -68,13 +88,13 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $('#addCustomer').click(function () {
-
+        $('#addCustomer').click(function (e) {
+            // e.preventDefault();
             addCustomer();
         });
-        $('#list').click(function () {
+        // $('#list').click(function () {
             getAll();
-        });
+        // });
     });
     var addCustomer = function () {
         var first_name = $('#first_name').val();
@@ -87,6 +107,7 @@
             data: customer,
             success: function () {
                 getAll();
+                $('#addModal').modal('hide');
             }
         });
         clear();
@@ -104,13 +125,14 @@
             }
         })
     }
-    function searchByFirstName(){
-        var key= $('#searchByName').val();
+
+    function searchByFirstName() {
+        var key = $('#searchByName').val();
         $.ajax({
-            type:'GET',
-            url:'/api/customers/search/'+key,
-            dataType:'json',
-            success: function (data){
+            type: 'GET',
+            url: '/api/customers/search/' + key,
+            dataType: 'json',
+            success: function (data) {
                 display(data)
             }
         })
@@ -146,18 +168,20 @@
     function updateCustomer() {
         var first_name = $('#edit_first_name').val();
         var last_name = $('#edit_last_name').val();
-        var id=$('#customer_id').val();
+        var id = $('#customer_id').val();
         var customer = {first_name, last_name};
 
         $.ajax({
-            type:'PUT',
-            url:'/api/customers/'+id,
-            data:customer,
-            success: function (){
+            type: 'PUT',
+            url: '/api/customers/' + id,
+            data: customer,
+            success: function () {
                 getAll();
-               $('#customer_id').val('');
-               $('#edit_first_name').val('');
-               $('#edit_last_name').val('');
+                $('#editModal').modal('hide');
+
+                $('#customer_id').val('');
+                $('#edit_first_name').val('');
+                $('#edit_last_name').val('');
             }
         })
     }
@@ -170,7 +194,7 @@
                     <td>${response[i].first_name}</td>
                     <td>${response[i].last_name}</td>
                     <td><button class="btn btn-danger" onclick="deleteCustomer(${response[i].id})" >delete</button></td>
-                    <td><button class="btn btn-primary" onclick="getById(${response[i].id})" >Edit</button></td>
+                    <td><button data-toggle="modal" data-target="#editModal" class="btn btn-primary" onclick="getById(${response[i].id})" >Edit</button></td>
                     </tr>`
 
         }
