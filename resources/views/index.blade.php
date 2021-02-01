@@ -7,9 +7,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
         integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
         crossorigin="anonymous"></script>
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
-    Add Customer
-</button>
+
 
 <!-- Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -23,11 +21,14 @@
             </div>
             <div class="modal-body">
                 <div class="">
-                    <p>First Name: <input type="text" name="first_name" id="first_name" class="form-control"/> <span
-                            id="first_name"></span></p>
-                    <p>Last Name: <input type="text" name="last_name" id="last_name" class="form-control"/> <span
-                            id="last_name"></span></p>
-                    <button id="addCustomer">ADD</button>
+                    <form>
+                        <p>First Name: <input type="text" name="first_name" id="first_name" class="form-control"/> <span
+                                id="first_name"></span></p>
+                        <p>Last Name: <input type="text" name="last_name" id="last_name" class="form-control"/> <span
+                                id="last_name"></span></p>
+                        <button id="addCustomer">ADD</button>
+                    </form>
+
                 </div>
             </div>
 {{--            <div class="modal-footer">--}}
@@ -54,13 +55,21 @@
                         id="last_name"></span></p>
                 <button id="update" onclick="updateCustomer()">update</button>
             </div>
-                    </div>--}}
+                    </div>
         </div>
     </div>
 </div>
 
 
 <div class="container mt-3">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity: 1;display:none " id="notification" >
+        <div class="toast-body" style="background-color: #8de38d;color: #0a740a" >
+            Delete successfully
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">
+        Add Customer
+    </button>
     <div class="card">
         <div class="card-header bg-success">
             <button id="list" onclick="getAll()">danh sach</button>
@@ -89,12 +98,10 @@
     $(document).ready(function () {
 
         $('#addCustomer').click(function (e) {
-            // e.preventDefault();
             addCustomer();
+            e.preventDefault();
         });
-        // $('#list').click(function () {
             getAll();
-        // });
     });
     var addCustomer = function () {
         var first_name = $('#first_name').val();
@@ -107,11 +114,10 @@
             data: customer,
             success: function () {
                 getAll();
-                $('#addModal').modal('hide');
+                clear();
+                $('#addModal').modal('hide')
             }
         });
-        clear();
-
     }
     let getAll = function () {
         $.ajax({
@@ -146,7 +152,10 @@
             dataType: 'json',
             success: function () {
                 getAll();
-
+              $('#notification').css("display","block")
+                setTimeout(() => {
+                    $('#notification').css("display","none")
+                }, 3000);
             }
         })
     }
@@ -190,7 +199,7 @@
         let str = '';
         for (let i = response.length - 1; i >= 0; i--) {
             str += `<tr>
-                    <td>${response[i].id}</td>
+                    <td>${i+1}</td>
                     <td>${response[i].first_name}</td>
                     <td>${response[i].last_name}</td>
                     <td><button class="btn btn-danger" onclick="deleteCustomer(${response[i].id})" >delete</button></td>
